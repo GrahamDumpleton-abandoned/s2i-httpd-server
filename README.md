@@ -11,7 +11,7 @@ As an example, to build and host a simple site with you only need run:
 ```
 oc new-app getwarped/s2i-httpd-server~https://github.com/getwarped/s2i-httpd-server.git --name offline
 
-oc expose svc/djangogirls
+oc expose svc/offline
 ```
 
 To have any changes to your document source automatically redeployed when changes are pushed back up to your Git repository, you can use the [web hooks integration](https://docs.openshift.com/container-platform/latest/dev_guide/builds.html#webhook-triggers) of OpenShift to create a link from your Git repository hosting service back to OpenShift.
