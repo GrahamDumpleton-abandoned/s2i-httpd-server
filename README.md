@@ -63,7 +63,7 @@ Objects:
 
 ```
 
-The ``APPLICATION_NAME`` and ``SOURCE_REPOSITORY`` should be specified. Override the ``BUILD_MEMORY_LIMIT`` and set it to a higher memory value if the ``httpd`` application keeps getting killed when processing the site data.
+The ``APPLICATION_NAME`` and ``SOURCE_REPOSITORY`` should be specified.
 
 The template applies the label ``appid`` to all resource objects created. The value of the label is constructed using ``${APPLICATION_NAME}-${INSTANCE_ID}``. There is no need to supply ``INSTANCE_ID`` as it will be automatically populated.
 
