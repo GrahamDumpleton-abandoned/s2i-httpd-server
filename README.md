@@ -9,12 +9,16 @@ To use this with OpenShift, it is a simple matter of creating a new application 
 As an example, to build and host a simple site with you only need run:
 
 ```
-oc new-app getwarped/s2i-httpd-server~https://github.com/getwarped/s2i-httpd-server.git --name offline
+oc new-app getwarped/s2i-httpd-server~https://github.com/getwarped/httpd-site-maintenance --name site-maintenance
 
-oc expose svc/offline
+oc expose svc/site-maintenance
 ```
 
 To have any changes to your document source automatically redeployed when changes are pushed back up to your Git repository, you can use the [web hooks integration](https://docs.openshift.com/container-platform/latest/dev_guide/builds.html#webhook-triggers) of OpenShift to create a link from your Git repository hosting service back to OpenShift.
+
+The repository used with the builder can host any static files assets, including HTML files, images, style sheets, JavaScript etc. It is possible to include ``.htaccess`` files in directories to control the Apache HTTPD server.
+
+## Creation Using Template
 
 To make it easier to deploy a static web site a template for OpenShift is also included. This can be loaded into your project using:
 

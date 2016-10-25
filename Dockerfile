@@ -24,24 +24,24 @@ RUN mkdir -p ${HOME} && \
             -c "Default Application User" default
 
 # Modify the default Apache configuration to listen on a non privileged
-# port of 8080, log everything to stdout/stderr, use different runtime
-# directory and host files from under the account created to hold files.
+# port of 8080 and log everything to stdout/stderr. Also include our own
+# configuration file so we can override other configuration.
 
 RUN mkdir -p ${HOME}/htdocs && \
     sed -ri -e 's/^Listen 80$/Listen 8080/' \
             -e 's%logs/access_log%/proc/self/fd/1%' \
             -e 's%logs/error_log%/proc/self/fd/2%' \
-            -e 's%/var/www/html%${HOME}/htdocs%' \
             /etc/httpd/conf/httpd.conf && \
-    echo "DefaultRuntimeDir ${HOME}" >> /etc/httpd/conf/httpd.conf && \
-    echo "PidFile ${HOME}/httpd.pid" >> /etc/httpd/conf/httpd.conf
+    echo "Include ${HOME}/httpd.conf" >> /etc/httpd/conf/httpd.conf
+
+COPY httpd.conf ${HOME}/httpd.conf
 
 EXPOSE 8080
 
 # Copy into place S2I builder scripts and label the Docker image so that
 # the 's2i' program knows where to find them.
 
-COPY s2i $HOME/s2i
+COPY s2i ${HOME}/s2i
 
 LABEL io.k8s.description="S2I builder for hosting files with Apache HTTPD server" \
       io.k8s.display-name="Apache HTTPD Server" \
