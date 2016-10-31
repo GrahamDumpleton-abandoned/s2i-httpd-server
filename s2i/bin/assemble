@@ -5,6 +5,7 @@ set -eo pipefail
 echo "---> Copying source files"
 
 rm -rf /tmp/src/.git*
+rm -rf /tmp/src/.s2i*
 
 cp -Rf /tmp/src/. /opt/app-root/htdocs/
 
