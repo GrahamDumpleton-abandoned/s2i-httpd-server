@@ -5,8 +5,9 @@ FROM centos:centos7
 # files into the running container if necessary.
 
 RUN rpmkeys --import file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7 && \
-    PACKAGES="httpd rsync" && \
-    yum install -y --setopt=tsflags=nodocs ${PACKAGES} && \
+    yum install -y centos-release-scl scl-utils && \
+    PACKAGES="httpd24 httpd24-httpd-devel httpd24-mod_auth_kerb httpd24-mod_ldap httpd24-mod_session rsync" && \
+    yum install -y --setopt=tsflags=nodocs --enablerepo=centosplus ${PACKAGES} && \
     rpm -V ${PACKAGES} && \
     yum clean all -y
 
@@ -29,19 +30,20 @@ RUN mkdir -p ${HOME} && \
 
 RUN mkdir -p ${HOME}/htdocs && \
     sed -ri -e 's/^Listen 80$/Listen 8080/' \
-            -e 's%logs/access_log%/proc/self/fd/1%' \
-            -e 's%logs/error_log%/proc/self/fd/2%' \
-            /etc/httpd/conf/httpd.conf && \
-    echo "Include ${HOME}/httpd.conf" >> /etc/httpd/conf/httpd.conf
+            -e 's%"logs/access_log"%"/proc/self/fd/1"%' \
+            -e 's%"logs/error_log"%"/proc/self/fd/2"%' \
+            /opt/rh/httpd24/root/etc/httpd/conf/httpd.conf && \
+    echo "Include ${HOME}/httpd.conf" >> /opt/rh/httpd24/root/etc/httpd/conf/httpd.conf
 
 COPY httpd.conf ${HOME}/httpd.conf
 
 EXPOSE 8080
 
-# Copy into place S2I builder scripts and label the Docker image so that
-# the 's2i' program knows where to find them.
+# Copy into place S2I builder scripts, the run script, and label the Docker
+# image so that the 's2i' program knows where to find them.
 
 COPY s2i ${HOME}/s2i
+COPY run ${HOME}/run
 
 LABEL io.k8s.description="S2I builder for hosting files with Apache HTTPD server" \
       io.k8s.display-name="Apache HTTPD Server" \
@@ -62,7 +64,6 @@ WORKDIR ${HOME}
 
 USER 1001
 
-# Set the Apache httpd server to be run when the container is run. Must
-# be run in the foreground else Apache httpd server will daemonise itself.
+# Set the Apache httpd server to be run when the container is run.
 
-CMD [ "httpd", "-DFOREGROUND" ]
+CMD [ "/opt/app-root/run" ]
