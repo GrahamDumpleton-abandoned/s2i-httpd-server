@@ -37,7 +37,6 @@ RUN mkdir -p ${HOME}/htdocs && \
 
 COPY httpd.conf ${HOME}/httpd.conf
 
-EXPOSE 8080
 
 # Copy into place S2I builder scripts, the run script, and label the Docker
 # image so that the 's2i' program knows where to find them.
@@ -47,7 +46,6 @@ COPY run ${HOME}/run
 
 LABEL io.k8s.description="S2I builder for hosting files with Apache HTTPD server" \
       io.k8s.display-name="Apache HTTPD Server" \
-      io.openshift.expose-services="8080:http" \
       io.openshift.tags="builder,httpd" \
       io.openshift.s2i.scripts-url="image://${HOME}/s2i/bin"
 
@@ -61,6 +59,7 @@ RUN chown -R 1001:0 /opt/app-root && \
 # Ensure container runs as non root account from its home directory.
 
 WORKDIR ${HOME}
+RUN chmod go+w ${HOME}/httpd.conf
 
 USER 1001
 
