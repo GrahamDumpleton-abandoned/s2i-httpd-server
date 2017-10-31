@@ -25,11 +25,13 @@ RUN mkdir -p ${HOME} && \
             -c "Default Application User" default
 
 # Modify the default Apache configuration to listen on a non privileged
-# port of 8080 and log everything to stdout/stderr. Also include our own
-# configuration file so we can override other configuration.
+# port (defaults to 8080) and log everything to stdout/stderr. Also
+# include own configuration file so we can override other configuration.
+
+ENV PORT=8080
 
 RUN mkdir -p ${HOME}/htdocs && \
-    sed -ri -e 's/^Listen 80$/Listen 8080/' \
+    sed -ri -e 's/^Listen 80$/Listen ${PORT}/' \
             -e 's%"logs/access_log"%"/proc/self/fd/1"%' \
             -e 's%"logs/error_log"%"/proc/self/fd/2"%' \
             /opt/rh/httpd24/root/etc/httpd/conf/httpd.conf && \
@@ -37,7 +39,7 @@ RUN mkdir -p ${HOME}/htdocs && \
 
 COPY httpd.conf ${HOME}/httpd.conf
 
-EXPOSE 8080
+EXPOSE ${PORT}
 
 # Copy into place S2I builder scripts, the run script, and label the Docker
 # image so that the 's2i' program knows where to find them.

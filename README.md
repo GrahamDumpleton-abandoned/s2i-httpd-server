@@ -45,7 +45,7 @@ Parameters:
     Description:	Git repository for source.
     Required:		true
     Value:		<none>
-    
+
     Name:		SOURCE_DIRECTORY
     Description:	Sub-directory of repository for source files.
     Required:		false
@@ -75,4 +75,40 @@ In this case this will create a Docker-formatted image called ``myhttpdsite``. Y
 
 ```
 docker run --rm -p 8080:8080 myhttpdsite
+```
+
+## Using an Alternate Port
+
+By default this image will use port 8080. If you want to override this so it can be used as a side car container to another container which uses port 8080, you can set the environment variable ``PORT`` in the environment variables for the container in the deployment configuration.
+
+```
+docker run --rm -e PORT=8081 -p 8081:8081 myhttpdsite
+```
+
+If deploying to OpenShift, you will need to setup the _Service_ object for the container to use the alternate port, overriding the default of port 8080. You will then be able to access it correctly, or expose it using a _Route_.
+
+```
+{
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": {
+        "labels": {
+            "app": "httpd"
+        },
+        "name": "httpd"
+    },
+    "spec": {
+        "ports": [
+            {
+                "name": "8081-tcp",
+                "port": 8081,
+                "protocol": "TCP",
+                "targetPort": 8081
+            }
+        ],
+        "selector": {
+            "deploymentconfig": "httpd"
+        }
+    }
+}
 ```
