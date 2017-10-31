@@ -76,3 +76,11 @@ In this case this will create a Docker-formatted image called ``myhttpdsite``. Y
 ```
 docker run --rm -p 8080:8080 myhttpdsite
 ```
+
+You can also change default port by setting the LISTEN_PORT environment variable
+```
+LISTEN_PORT=9000 docker run --rm -p $LISTEN_PORT:$LISTEN_PORT myhttpdsite
+```
+
+
+
